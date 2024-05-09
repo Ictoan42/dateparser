@@ -111,13 +111,16 @@
 //!     // Mon dd hh:mm:ss
 //!     "May 6 at 9:24 PM",
 //!     "May 27 02:45:27",
+//!     "Aug 27th 07:39:41",
 //!     // Mon dd, yyyy, hh:mm:ss
 //!     "May 8, 2009 5:57:51 PM",
+//!     "August 1st, 2009 3:29:17 AM",
 //!     "September 17, 2012 10:09am",
 //!     "September 17, 2012, 10:10:09",
 //!     // Mon dd, yyyy hh:mm:ss z
 //!     "May 02, 2021 15:51:31 UTC",
 //!     "May 02, 2021 15:51 UTC",
+//!     "August 1st, 2023 15:51 UTC",
 //!     "May 26, 2021, 12:49 AM PDT",
 //!     "September 17, 2012 at 10:09am PST",
 //!     // yyyy-mon-dd
@@ -129,14 +132,21 @@
 //!     "oct. 7, 1970",
 //!     "oct. 7, 70",
 //!     "October 7, 1970",
+//!     "oct 7th, 70",
+//!     "oct. 2nd, 1970",
+//!     "oct. 1st, 70",
+//!     "October 3rd, 1970",
 //!     // dd Mon yyyy hh:mm:ss
 //!     "12 Feb 2006, 19:17",
 //!     "12 Feb 2006 19:17",
+//!     "1st Feb 2006 19:17",
 //!     "14 May 2019 19:11:40.164",
 //!     // dd Mon yyyy
 //!     "7 oct 70",
 //!     "7 oct 1970",
+//!     "1st oct 1970",
 //!     "03 February 2013",
+//!     "03rd February 2013",
 //!     "1 July 2013",
 //!     // mm/dd/yyyy hh:mm:ss
 //!     "4/8/2014 22:05",
@@ -183,6 +193,7 @@
 //!
 //! for date_str in accepted {
 //!     let result = date_str.parse::<DateTimeUtc>();
+//!     println!("{}", date_str);
 //!     assert!(result.is_ok())
 //! }
 //! ```
@@ -488,6 +499,24 @@ mod tests {
                 Trunc::None,
             ),
             (
+                "month_md_hms",
+                "May 27th 02:45:27",
+                Local
+                    .ymd(Local::now().year(), 5, 27)
+                    .and_hms(2, 45, 27)
+                    .with_timezone(&Utc),
+                Trunc::None,
+            ),
+            (
+                "month_mdy_hms",
+                "May 8th, 2009 5:57:51 PM",
+                Local
+                    .ymd(2009, 5, 8)
+                    .and_hms(17, 57, 51)
+                    .with_timezone(&Utc),
+                Trunc::None,
+            ),
+            (
                 "month_mdy_hms",
                 "May 8, 2009 5:57:51 PM",
                 Local
@@ -498,9 +527,25 @@ mod tests {
             ),
             (
                 "month_mdy_hms_z",
+                "May 02nd, 2021 15:51 UTC",
+                Utc.ymd(2021, 5, 2).and_hms(15, 51, 0),
+                Trunc::None,
+            ),
+            (
+                "month_mdy_hms_z",
                 "May 02, 2021 15:51 UTC",
                 Utc.ymd(2021, 5, 2).and_hms(15, 51, 0),
                 Trunc::None,
+            ),
+            (
+                "month_mdy",
+                "May 25th, 2021",
+                Local
+                    .ymd(2021, 5, 25)
+                    .and_time(Local::now().time())
+                    .unwrap()
+                    .with_timezone(&Utc),
+                Trunc::Seconds,
             ),
             (
                 "month_mdy",
@@ -514,12 +559,31 @@ mod tests {
             ),
             (
                 "month_dmy_hms",
+                "14th May 2019 19:11:40.164",
+                Local
+                    .ymd(2019, 5, 14)
+                    .and_hms_milli(19, 11, 40, 164)
+                    .with_timezone(&Utc),
+                Trunc::None,
+            ),
+            (
+                "month_dmy_hms",
                 "14 May 2019 19:11:40.164",
                 Local
                     .ymd(2019, 5, 14)
                     .and_hms_milli(19, 11, 40, 164)
                     .with_timezone(&Utc),
                 Trunc::None,
+            ),
+            (
+                "month_dmy",
+                "1st July 2013",
+                Local
+                    .ymd(2013, 7, 1)
+                    .and_time(Local::now().time())
+                    .unwrap()
+                    .with_timezone(&Utc),
+                Trunc::Seconds,
             ),
             (
                 "month_dmy",
