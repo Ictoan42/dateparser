@@ -110,33 +110,35 @@
 //!     "6:00pm UTC",
 //!     // Mon dd hh:mm:ss
 //!     "May 6 at 9:24 PM",
-//!     "May 27 02:45:27",
+//!     "May 27, 02:45:27",
 //!     // Mon dd, yyyy, hh:mm:ss
 //!     "May 8, 2009 5:57:51 PM",
 //!     "September 17, 2012 10:09am",
-//!     "September 17, 2012, 10:10:09",
+//!     "September 17 2012, 10:10:09",
+//!     "September 17 2012 10:10:09",
 //!     // Mon dd, yyyy hh:mm:ss z
 //!     "May 02, 2021 15:51:31 UTC",
-//!     "May 02, 2021 15:51 UTC",
-//!     "May 26, 2021, 12:49 AM PDT",
+//!     "May 02 2021 15:51 UTC",
+//!     "May 26 2021, 12:49 AM PDT",
 //!     "September 17, 2012 at 10:09am PST",
 //!     // yyyy-mon-dd
 //!     "2021-Feb-21",
 //!     // Mon dd, yyyy
 //!     "May 25, 2021",
-//!     "oct 7, 1970",
+//!     "oct 7 1970",
 //!     "oct 7, 70",
-//!     "oct. 7, 1970",
+//!     "oct. 7 1970",
 //!     "oct. 7, 70",
-//!     "October 7, 1970",
+//!     "October 7 1970",
 //!     // dd Mon yyyy hh:mm:ss
 //!     "12 Feb 2006, 19:17",
-//!     "12 Feb 2006 19:17",
+//!     "12 Feb, 2006 19:17",
 //!     "14 May 2019 19:11:40.164",
+//!     "14 May, 2019, 19:11:40.164",
 //!     // dd Mon yyyy
-//!     "7 oct 70",
+//!     "7 oct, 70",
 //!     "7 oct 1970",
-//!     "03 February 2013",
+//!     "03 February, 2013",
 //!     "1 July 2013",
 //!     // mm/dd/yyyy hh:mm:ss
 //!     "4/8/2014 22:05",
