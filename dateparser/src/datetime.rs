@@ -1211,6 +1211,14 @@ mod tests {
                 "May 27 02:45:27",
                 Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
             ),
+            (
+                "May 6th at 9:24 PM",
+                Utc.ymd(Utc::now().year(), 5, 6).and_hms(21, 24, 0),
+            ),
+            (
+                "May 2nd 02:45:27",
+                Utc.ymd(Utc::now().year(), 5, 2).and_hms(2, 45, 27),
+            ),
         ];
 
         for &(input, want) in test_cases.iter() {
@@ -1240,6 +1248,18 @@ mod tests {
             (
                 "September 17, 2012, 10:10:09",
                 Utc.ymd(2012, 9, 17).and_hms(10, 10, 9),
+            ),
+            (
+                "May 8th, 2009 5:57:51 PM",
+                Utc.ymd(2009, 5, 8).and_hms(17, 57, 51),
+            ),
+            (
+                "September 1st, 2012 10:09am",
+                Utc.ymd(2012, 9, 1).and_hms(10, 9, 0),
+            ),
+            (
+                "September 3rd, 2012, 10:10:09",
+                Utc.ymd(2012, 9, 3).and_hms(10, 10, 9),
             ),
         ];
 
@@ -1274,6 +1294,22 @@ mod tests {
             (
                 "September 17, 2012 at 10:09am PST",
                 Utc.ymd(2012, 9, 17).and_hms(18, 9, 0),
+            ),
+            (
+                "May 02nd, 2021 15:51:31 UTC",
+                Utc.ymd(2021, 5, 2).and_hms(15, 51, 31),
+            ),
+            (
+                "May 2nd, 2021 15:51 UTC",
+                Utc.ymd(2021, 5, 2).and_hms(15, 51, 0),
+            ),
+            (
+                "May 1st, 2021, 12:49 AM PDT",
+                Utc.ymd(2021, 5, 1).and_hms(7, 49, 0),
+            ),
+            (
+                "September 3rd, 2012 at 10:09am PST",
+                Utc.ymd(2012, 9, 3).and_hms(18, 9, 0),
             ),
         ];
 
@@ -1317,6 +1353,18 @@ mod tests {
                 "October 7, 1970",
                 Utc.ymd(1970, 10, 7).and_time(Utc::now().time()),
             ),
+            (
+                "oct. 7th, 1970",
+                Utc.ymd(1970, 10, 7).and_time(Utc::now().time()),
+            ),
+            (
+                "oct. 1st, 70",
+                Utc.ymd(1970, 10, 1).and_time(Utc::now().time()),
+            ),
+            (
+                "October 2nd, 1970",
+                Utc.ymd(1970, 10, 2).and_time(Utc::now().time()),
+            ),
         ];
 
         for &(input, want) in test_cases.iter() {
@@ -1345,10 +1393,23 @@ mod tests {
                 "12 Feb 2006, 19:17",
                 Utc.ymd(2006, 2, 12).and_hms(19, 17, 0),
             ),
-            ("12 Feb 2006 19:17", Utc.ymd(2006, 2, 12).and_hms(19, 17, 0)),
+            (
+                "12 Feb 2006 19:17",
+                Utc.ymd(2006, 2, 12).and_hms(19, 17, 0)),
             (
                 "14 May 2019 19:11:40.164",
                 Utc.ymd(2019, 5, 14).and_hms_milli(19, 11, 40, 164),
+            ),
+            (
+                "12th Feb 2006, 19:17",
+                Utc.ymd(2006, 2, 12).and_hms(19, 17, 0),
+            ),
+            (
+                "1st Feb 2006 19:17",
+                Utc.ymd(2006, 2, 1).and_hms(19, 17, 0)),
+            (
+                "2nd May 2019 19:11:40.164",
+                Utc.ymd(2019, 5, 2).and_hms_milli(19, 11, 40, 164),
             ),
         ];
 
@@ -1368,7 +1429,9 @@ mod tests {
         let parse = Parse::new(&Utc, None);
 
         let test_cases = [
-            ("7 oct 70", Utc.ymd(1970, 10, 7).and_time(Utc::now().time())),
+            (
+                "7 oct 70",
+                Utc.ymd(1970, 10, 7).and_time(Utc::now().time())),
             (
                 "7 oct 1970",
                 Utc.ymd(1970, 10, 7).and_time(Utc::now().time()),
@@ -1379,6 +1442,21 @@ mod tests {
             ),
             (
                 "1 July 2013",
+                Utc.ymd(2013, 7, 1).and_time(Utc::now().time()),
+            ),
+            (
+                "7th oct 70",
+                Utc.ymd(1970, 10, 7).and_time(Utc::now().time())),
+            (
+                "2nd oct 1970",
+                Utc.ymd(1970, 10, 2).and_time(Utc::now().time()),
+            ),
+            (
+                "03th February 2013",
+                Utc.ymd(2013, 2, 3).and_time(Utc::now().time()),
+            ),
+            (
+                "1st July 2013",
                 Utc.ymd(2013, 7, 1).and_time(Utc::now().time()),
             ),
         ];
