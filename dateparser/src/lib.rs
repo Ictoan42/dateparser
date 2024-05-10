@@ -138,24 +138,24 @@
 //!     "7 oct 1970",
 //!     "03 February 2013",
 //!     "1 July 2013",
-//!     // mm/dd/yyyy hh:mm:ss
-//!     "4/8/2014 22:05",
-//!     "04/08/2014 22:05",
-//!     "4/8/14 22:05",
-//!     "04/2/2014 03:00:51",
+//!     // dd/mm/yyyy hh:mm:ss
+//!     "8/4/2014 22:05",
+//!     "08/04/2014 22:05",
+//!     "8/4/14 22:05",
+//!     "02/4/2014 03:00:51",
 //!     "8/8/1965 12:00:00 AM",
 //!     "8/8/1965 01:00:01 PM",
 //!     "8/8/1965 01:00 PM",
 //!     "8/8/1965 1:00 PM",
 //!     "8/8/1965 12:00 AM",
-//!     "4/02/2014 03:00:51",
-//!     "03/19/2012 10:11:59",
-//!     "03/19/2012 10:11:59.3186369",
-//!     // mm/dd/yyyy
-//!     "3/31/2014",
-//!     "03/31/2014",
-//!     "08/21/71",
-//!     "8/1/71",
+//!     "2/04/2014 03:00:51",
+//!     "19/03/2012 10:11:59",
+//!     "19/03/2012 10:11:59.3186369",
+//!     // dd/mm/yyyy
+//!     "31/3/2014",
+//!     "31/03/2014",
+//!     "21/08/71",
+//!     "1/8/71",
 //!     // yyyy/mm/dd hh:mm:ss
 //!     "2014/4/8 22:05",
 //!     "2014/04/08 22:05",
@@ -166,10 +166,10 @@
 //!     // yyyy/mm/dd
 //!     "2014/3/31",
 //!     "2014/03/31",
-//!     // mm.dd.yyyy
-//!     "3.31.2014",
-//!     "03.31.2014",
-//!     "08.21.71",
+//!     // dd.mm.yyyy
+//!     "31.3.2014",
+//!     "31.03.2014",
+//!     "21.08.71",
 //!     // yyyy.mm.dd
 //!     "2014.03.30",
 //!     "2014.03",
@@ -532,8 +532,8 @@ mod tests {
                 Trunc::Seconds,
             ),
             (
-                "slash_mdy_hms",
-                "03/19/2012 10:11:59",
+                "slash_dmy_hms",
+                "19/03/2012 10:11:59",
                 Local
                     .ymd(2012, 3, 19)
                     .and_hms(10, 11, 59)
@@ -541,8 +541,8 @@ mod tests {
                 Trunc::None,
             ),
             (
-                "slash_mdy",
-                "08/21/71",
+                "slash_dmy",
+                "21/08/71",
                 Local
                     .ymd(1971, 8, 21)
                     .and_time(Local::now().time())
@@ -570,7 +570,7 @@ mod tests {
                 Trunc::Seconds,
             ),
             (
-                "dot_mdy_or_ymd",
+                "dot_dmy_or_ymd",
                 "2014.03.30",
                 Local
                     .ymd(2014, 3, 30)
@@ -761,14 +761,14 @@ mod tests {
                 Trunc::Seconds,
             ),
             (
-                "slash_mdy_hms",
-                "03/19/2012 10:11:59",
+                "slash_dmy_hms",
+                "19/03/2012 10:11:59",
                 Utc.ymd(2012, 3, 19).and_hms(10, 11, 59),
                 Trunc::None,
             ),
             (
-                "slash_mdy",
-                "08/21/71",
+                "slash_dmy",
+                "21/08/71",
                 Utc.ymd(1971, 8, 21).and_time(Utc::now().time()).unwrap(),
                 Trunc::Seconds,
             ),
@@ -785,7 +785,7 @@ mod tests {
                 Trunc::Seconds,
             ),
             (
-                "dot_mdy_or_ymd",
+                "dot_dmy_or_ymd",
                 "2014.03.30",
                 Utc.ymd(2014, 3, 30).and_time(Utc::now().time()).unwrap(),
                 Trunc::Seconds,
@@ -853,9 +853,9 @@ mod tests {
             ("month_ymd", "2023-Apr-21"),
             ("month_mdy", "April 21, 2023"),
             ("month_dmy", "21 April 2023"),
-            ("slash_mdy", "04/21/23"),
+            ("slash_dmy", "21/04/23"),
             ("slash_ymd", "2023/4/21"),
-            ("dot_mdy_or_ymd", "2023.04.21"),
+            ("dot_dmy_or_ymd", "2023.04.21"),
             ("chinese_ymd", "2023年04月21日"),
         ];
 
@@ -896,9 +896,9 @@ mod tests {
             ("month_ymd", "2023-Dec-21"),
             ("month_mdy", "December 21, 2023"),
             ("month_dmy", "21 December 2023"),
-            ("slash_mdy", "12/21/23"),
+            ("slash_dmy", "21/12/23"),
             ("slash_ymd", "2023/12/21"),
-            ("dot_mdy_or_ymd", "2023.12.21"),
+            ("dot_dmy_or_ymd", "2023.12.21"),
             ("chinese_ymd", "2023年12月21日"),
         ];
 
@@ -934,9 +934,9 @@ mod tests {
             ("month_ymd", "2023-Dec-21"),
             ("month_mdy", "December 21, 2023"),
             ("month_dmy", "21 December 2023"),
-            ("slash_mdy", "12/21/23"),
+            ("slash_dmy", "21/12/23"),
             ("slash_ymd", "2023/12/21"),
-            ("dot_mdy_or_ymd", "2023.12.21"),
+            ("dot_dmy_or_ymd", "2023.12.21"),
             ("chinese_ymd", "2023年12月21日"),
         ];
         // test utc at midnight
@@ -970,9 +970,9 @@ mod tests {
             ("month_ymd", "2023-Dec-21"),
             ("month_mdy", "December 21, 2023"),
             ("month_dmy", "21 December 2023"),
-            ("slash_mdy", "12/21/23"),
+            ("slash_dmy", "21/12/23"),
             ("slash_ymd", "2023/12/21"),
-            ("dot_mdy_or_ymd", "2023.12.21"),
+            ("dot_dmy_or_ymd", "2023.12.21"),
             ("chinese_ymd", "2023年12月21日"),
         ];
 

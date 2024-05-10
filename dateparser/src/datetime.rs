@@ -31,9 +31,9 @@ where
             .or_else(|| self.month_ymd(input))
             .or_else(|| self.month_mdy_family(input))
             .or_else(|| self.month_dmy_family(input))
-            .or_else(|| self.slash_mdy_family(input))
+            .or_else(|| self.slash_dmy_family(input))
             .or_else(|| self.slash_ymd_family(input))
-            .or_else(|| self.dot_mdy_or_ymd(input))
+            .or_else(|| self.dot_dmy_or_ymd(input))
             .or_else(|| self.mysql_log_timestamp(input))
             .or_else(|| self.chinese_ymd_family(input))
             .unwrap_or_else(|| Err(anyhow!("{} did not match any formats.", input)))
@@ -87,14 +87,14 @@ where
         self.month_dmy_hms(input).or_else(|| self.month_dmy(input))
     }
 
-    fn slash_mdy_family(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
+    fn slash_dmy_family(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(r"^[0-9]{1,2}/[0-9]{1,2}").unwrap();
         }
         if !RE.is_match(input) {
             return None;
         }
-        self.slash_mdy_hms(input).or_else(|| self.slash_mdy(input))
+        self.slash_dmy_hms(input).or_else(|| self.slash_dmy(input))
     }
 
     fn slash_ymd_family(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
@@ -591,7 +591,7 @@ where
     // - 4/02/2014 03:00:51
     // - 03/19/2012 10:11:59
     // - 03/19/2012 10:11:59.3186369
-    fn slash_mdy_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
+    fn slash_dmy_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
                 r"^[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?(\.[0-9]{1,9})?\s*(am|pm|AM|PM)?$"
@@ -603,16 +603,16 @@ where
         }
 
         self.tz
-            .datetime_from_str(input, "%m/%d/%y %H:%M:%S")
-            .or_else(|_| self.tz.datetime_from_str(input, "%m/%d/%y %H:%M"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%m/%d/%y %H:%M:%S%.f"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%m/%d/%y %I:%M:%S %P"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%m/%d/%y %I:%M %P"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%m/%d/%Y %H:%M:%S"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%m/%d/%Y %H:%M"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%m/%d/%Y %H:%M:%S%.f"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%m/%d/%Y %I:%M:%S %P"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%m/%d/%Y %I:%M %P"))
+            .datetime_from_str(input, "%d/%m/%y %H:%M:%S")
+            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%y %H:%M"))
+            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%y %H:%M:%S%.f"))
+            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%y %I:%M:%S %P"))
+            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%y %I:%M %P"))
+            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%Y %H:%M:%S"))
+            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%Y %H:%M"))
+            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%Y %H:%M:%S%.f"))
+            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%Y %I:%M:%S %P"))
+            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%Y %I:%M %P"))
             .ok()
             .map(|at_tz| at_tz.with_timezone(&Utc))
             .map(Ok)
@@ -623,7 +623,7 @@ where
     // - 03/31/2014
     // - 08/21/71
     // - 8/1/71
-    fn slash_mdy(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
+    fn slash_dmy(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(r"^[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}$").unwrap();
         }
@@ -637,8 +637,8 @@ where
             None => Utc::now().with_timezone(self.tz).time(),
         };
 
-        NaiveDate::parse_from_str(input, "%m/%d/%y")
-            .or_else(|_| NaiveDate::parse_from_str(input, "%m/%d/%Y"))
+        NaiveDate::parse_from_str(input, "%d/%m/%y")
+            .or_else(|_| NaiveDate::parse_from_str(input, "%d/%m/%Y"))
             .ok()
             .map(|parsed| parsed.and_time(time))
             .and_then(|datetime| self.tz.from_local_datetime(&datetime).single())
@@ -707,7 +707,7 @@ where
     // yyyy.mm.dd
     // - 2014.03.30
     // - 2014.03
-    fn dot_mdy_or_ymd(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
+    fn dot_dmy_or_ymd(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(r"[0-9]{1,4}.[0-9]{1,4}[0-9]{1,4}").unwrap();
         }
@@ -721,8 +721,8 @@ where
             None => Utc::now().with_timezone(self.tz).time(),
         };
 
-        NaiveDate::parse_from_str(input, "%m.%d.%y")
-            .or_else(|_| NaiveDate::parse_from_str(input, "%m.%d.%Y"))
+        NaiveDate::parse_from_str(input, "%d.%m.%y")
+            .or_else(|_| NaiveDate::parse_from_str(input, "%d.%m.%Y"))
             .or_else(|_| NaiveDate::parse_from_str(input, "%Y.%m.%d"))
             .or_else(|_| {
                 NaiveDate::parse_from_str(&format!("{}.{}", input, Utc::now().day()), "%Y.%m.%d")
@@ -1405,10 +1405,10 @@ mod tests {
         let parse = Parse::new(&Utc, None);
 
         let test_cases = vec![
-            ("4/8/2014 22:05", Utc.ymd(2014, 4, 8).and_hms(22, 5, 0)),
-            ("04/08/2014 22:05", Utc.ymd(2014, 4, 8).and_hms(22, 5, 0)),
-            ("4/8/14 22:05", Utc.ymd(2014, 4, 8).and_hms(22, 5, 0)),
-            ("04/2/2014 03:00:51", Utc.ymd(2014, 4, 2).and_hms(3, 0, 51)),
+            ("8/4/2014 22:05", Utc.ymd(2014, 4, 8).and_hms(22, 5, 0)),
+            ("08/04/2014 22:05", Utc.ymd(2014, 4, 8).and_hms(22, 5, 0)),
+            ("8/4/14 22:05", Utc.ymd(2014, 4, 8).and_hms(22, 5, 0)),
+            ("02/4/2014 03:00:51", Utc.ymd(2014, 4, 2).and_hms(3, 0, 51)),
             ("8/8/1965 12:00:00 AM", Utc.ymd(1965, 8, 8).and_hms(0, 0, 0)),
             (
                 "8/8/1965 01:00:01 PM",
@@ -1417,26 +1417,26 @@ mod tests {
             ("8/8/1965 01:00 PM", Utc.ymd(1965, 8, 8).and_hms(13, 0, 0)),
             ("8/8/1965 1:00 PM", Utc.ymd(1965, 8, 8).and_hms(13, 0, 0)),
             ("8/8/1965 12:00 AM", Utc.ymd(1965, 8, 8).and_hms(0, 0, 0)),
-            ("4/02/2014 03:00:51", Utc.ymd(2014, 4, 2).and_hms(3, 0, 51)),
+            ("2/04/2014 03:00:51", Utc.ymd(2014, 4, 2).and_hms(3, 0, 51)),
             (
-                "03/19/2012 10:11:59",
+                "19/03/2012 10:11:59",
                 Utc.ymd(2012, 3, 19).and_hms(10, 11, 59),
             ),
             (
-                "03/19/2012 10:11:59.3186369",
+                "19/03/2012 10:11:59.3186369",
                 Utc.ymd(2012, 3, 19).and_hms_nano(10, 11, 59, 318636900),
             ),
         ];
 
         for &(input, want) in test_cases.iter() {
             assert_eq!(
-                parse.slash_mdy_hms(input).unwrap().unwrap(),
+                parse.slash_dmy_hms(input).unwrap().unwrap(),
                 want,
                 "slash_mdy_hms/{}",
                 input
             )
         }
-        assert!(parse.slash_mdy_hms("not-date-time").is_none());
+        assert!(parse.slash_dmy_hms("not-date-time").is_none());
     }
 
     #[test]
@@ -1445,21 +1445,21 @@ mod tests {
 
         let test_cases = [
             (
-                "3/31/2014",
+                "31/3/2014",
                 Utc.ymd(2014, 3, 31).and_time(Utc::now().time()),
             ),
             (
-                "03/31/2014",
+                "31/03/2014",
                 Utc.ymd(2014, 3, 31).and_time(Utc::now().time()),
             ),
-            ("08/21/71", Utc.ymd(1971, 8, 21).and_time(Utc::now().time())),
-            ("8/1/71", Utc.ymd(1971, 8, 1).and_time(Utc::now().time())),
+            ("21/08/71", Utc.ymd(1971, 8, 21).and_time(Utc::now().time())),
+            ("1/8/71", Utc.ymd(1971, 8, 1).and_time(Utc::now().time())),
         ];
 
         for &(input, want) in test_cases.iter() {
             assert_eq!(
                 parse
-                    .slash_mdy(input)
+                    .slash_dmy(input)
                     .unwrap()
                     .unwrap()
                     .trunc_subsecs(0)
@@ -1470,7 +1470,7 @@ mod tests {
                 input
             )
         }
-        assert!(parse.slash_mdy("not-date-time").is_none());
+        assert!(parse.slash_dmy("not-date-time").is_none());
     }
 
     #[test]
@@ -1542,14 +1542,14 @@ mod tests {
         let test_cases = [
             // mm.dd.yyyy
             (
-                "3.31.2014",
+                "31.3.2014",
                 Utc.ymd(2014, 3, 31).and_time(Utc::now().time()),
             ),
             (
-                "03.31.2014",
+                "31.03.2014",
                 Utc.ymd(2014, 3, 31).and_time(Utc::now().time()),
             ),
-            ("08.21.71", Utc.ymd(1971, 8, 21).and_time(Utc::now().time())),
+            ("21.08.71", Utc.ymd(1971, 8, 21).and_time(Utc::now().time())),
             // yyyy.mm.dd
             (
                 "2014.03.30",
@@ -1565,7 +1565,7 @@ mod tests {
         for &(input, want) in test_cases.iter() {
             assert_eq!(
                 parse
-                    .dot_mdy_or_ymd(input)
+                    .dot_dmy_or_ymd(input)
                     .unwrap()
                     .unwrap()
                     .trunc_subsecs(0)
@@ -1576,7 +1576,7 @@ mod tests {
                 input
             )
         }
-        assert!(parse.dot_mdy_or_ymd("not-date-time").is_none());
+        assert!(parse.dot_dmy_or_ymd("not-date-time").is_none());
     }
 
     #[test]
