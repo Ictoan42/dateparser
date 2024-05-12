@@ -411,7 +411,7 @@ where
     fn month_md_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[a-zA-Z]{3}\s+[0-9]{1,2}\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
+                r"^[a-zA-Z]{3,9}\s+[0-9]{1,2}\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
             )
             .unwrap();
         }
@@ -422,8 +422,8 @@ where
         let now = Utc::now().with_timezone(self.tz);
         let with_year = format!("{} {}", now.year(), input);
         self.tz
-            .datetime_from_str(&with_year, "%Y %b %d at %I:%M %P")
-            .or_else(|_| self.tz.datetime_from_str(&with_year, "%Y %b %d %H:%M:%S"))
+            .datetime_from_str(&with_year, "%Y %B %d at %I:%M %P")
+            .or_else(|_| self.tz.datetime_from_str(&with_year, "%Y %B %d %H:%M:%S"))
             .ok()
             .map(|parsed| parsed.with_timezone(&Utc))
             .map(Ok)
