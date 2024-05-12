@@ -1268,6 +1268,10 @@ mod tests {
                 Utc.ymd(2021, 5, 2).and_hms(15, 51, 0),
             ),
             (
+                "May 02, 2021 8:51 UTC",
+                Utc.ymd(2021, 5, 2).and_hms(8, 51, 0),
+            ),
+            (
                 "May 26, 2021, 12:49 AM PDT",
                 Utc.ymd(2021, 5, 26).and_hms(7, 49, 0),
             ),
