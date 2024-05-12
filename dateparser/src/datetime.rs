@@ -1677,7 +1677,10 @@ mod tests {
                 "12 Feb, 2006, 19:17",
                 Utc.ymd(2006, 2, 12).and_hms(19, 17, 0),
             ),
-            ("12 Feb, 2006 19:17", Utc.ymd(2006, 2, 12).and_hms(19, 17, 0)),
+            (
+                "12 Feb, 2006 19:17",
+                Utc.ymd(2006, 2, 12).and_hms(19, 17, 0)
+            ),
         ];
 
         for &(input, want) in test_cases.iter() {
