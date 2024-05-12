@@ -163,8 +163,8 @@
 //!     "03 February, 2013",
 //!     "1 July 2013",
 //!     // dd Mon
-//!     "1 July",
-//!     "7 oct",
+//!     "1st July",
+//!     "7th oct",
 //!     "14 september",
 //!     "9 Feb",
 //!     // dd/mm/yyyy hh:mm:ss
