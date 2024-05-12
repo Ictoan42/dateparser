@@ -426,9 +426,16 @@ where
         let without_suffixes = strip_number_suffixes(&input);
         let without_comma = without_suffixes.replace(", ", " ");
         let with_year = format!("{} {}", now.year(), without_comma);
+        let dt = with_year.replace("at ", " ");
         self.tz
-            .datetime_from_str(&with_year, "%Y %B %d at %I:%M %P")
-            .or_else(|_| self.tz.datetime_from_str(&with_year, "%Y %B %d %H:%M:%S"))
+            .datetime_from_str(&dt, "%Y %B %d %I:%M %P")
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %B %d %I:%M"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %B %d %I:%M:%S"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %B %d %I:%M:%S %P"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %B %d %H:%M"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %B %d %H:%M:%S"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %B %d %H:%M %P"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %B %d %H:%M:%S %P"))
             .ok()
             .map(|parsed| parsed.with_timezone(&Utc))
             .map(Ok)
@@ -1334,6 +1341,22 @@ mod tests {
             ),
             (
                 "february 27 02:45:27",
+                Utc.ymd(Utc::now().year(), 2, 27).and_hms(2, 45, 27),
+            ),
+            (
+                "May 6 9:24 PM",
+                Utc.ymd(Utc::now().year(), 5, 6).and_hms(21, 24, 0),
+            ),
+            (
+                "May 27 at 02:45:27",
+                Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
+            ),
+            (
+                "September 6 at 9:24:36 pm",
+                Utc.ymd(Utc::now().year(), 9, 6).and_hms(21, 24, 36),
+            ),
+            (
+                "february 27 02:45:27 am",
                 Utc.ymd(Utc::now().year(), 2, 27).and_hms(2, 45, 27),
             ),
         ];
