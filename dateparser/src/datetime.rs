@@ -397,7 +397,7 @@ where
         };
 
         NaiveDate::parse_from_str(input, "%Y-%m-%d")
-            .or_else(|_| NaiveDate::parse_from_str(input, "%Y-%b-%d"))
+            .or_else(|_| NaiveDate::parse_from_str(input, "%Y-%B-%d"))
             .ok()
             .map(|parsed| parsed.and_time(time))
             .and_then(|datetime| self.tz.from_local_datetime(&datetime).single())
@@ -1176,10 +1176,16 @@ mod tests {
     fn month_ymd() {
         let parse = Parse::new(&Utc, None);
 
-        let test_cases = [(
+        let test_cases = [
+            (
             "2021-Feb-21",
             Utc.ymd(2021, 2, 21).and_time(Utc::now().time()),
-        )];
+            ),
+            (
+            "2013-september-15",
+            Utc.ymd(2013, 9, 15).and_time(Utc::now().time()),
+            )
+        ];
 
         for &(input, want) in test_cases.iter() {
             assert_eq!(
