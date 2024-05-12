@@ -146,8 +146,8 @@
 //!     "October 3rd, 1970",
 //!     // dd Mon hh:mm:ss
 //!     "12 September 08:00",
-//!     "11 march 8:00 pm",
-//!     "14 feb 14:13",
+//!     "11th march 8:00 pm",
+//!     "1st feb 14:13",
 //!     // dd Mon yyyy hh:mm:ss
 //!     "12 Feb 2006, 19:17",
 //!     "12 Feb 2006 19:17",

@@ -666,7 +666,7 @@ where
     fn month_dm_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[0-9]{1,2}\s+[a-zA-Z]{3,9}\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
+                r"^[0-9]{1,2}(st|nd|rd|th)?\s+[a-zA-Z]{3,9}\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
             )
             .unwrap();
         }
@@ -675,7 +675,8 @@ where
         }
 
         let now = Utc::now().with_timezone(self.tz);
-        let with_year = format!("{} {}", now.year(), input);
+        let without_suffixes = strip_number_suffixes(input);
+        let with_year = format!("{} {}", now.year(), without_suffixes);
         let dt = with_year.replace("at ", " ");
         self.tz
             .datetime_from_str(&dt, "%Y %d %B %I:%M %P")
@@ -1674,7 +1675,7 @@ mod tests {
 
         let test_cases = [
             (
-                "6 May at 9:24 PM",
+                "6th May at 9:24 PM",
                 Utc.ymd(Utc::now().year(), 5, 6).and_hms(21, 24, 0),
             ),
             (
@@ -1682,8 +1683,8 @@ mod tests {
                 Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
             ),
             (
-                "6 September at 9:24 PM",
-                Utc.ymd(Utc::now().year(), 9, 6).and_hms(21, 24, 0),
+                "1st September at 9:24 PM",
+                Utc.ymd(Utc::now().year(), 9, 1).and_hms(21, 24, 0),
             ),
             (
                 "27 february 02:45:27",
@@ -1694,8 +1695,8 @@ mod tests {
                 Utc.ymd(Utc::now().year(), 5, 6).and_hms(21, 24, 0),
             ),
             (
-                "27 May at 02:45:27",
-                Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
+                "11th May at 02:45:27",
+                Utc.ymd(Utc::now().year(), 5, 11).and_hms(2, 45, 27),
             ),
             (
                 "6 September at 9:24:36 pm",
