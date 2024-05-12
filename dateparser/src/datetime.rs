@@ -411,7 +411,7 @@ where
     fn month_md_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[a-zA-Z]{3}\s+[0-9]{1,2}(st|nd|rd|th)?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
+                r"^[a-zA-Z]{3}\s+[0-9]{1,2}(st|nd|rd|th)?,?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
             )
             .unwrap();
         }
@@ -421,7 +421,8 @@ where
 
         let now = Utc::now().with_timezone(self.tz);
         let without_suffixes = strip_number_suffixes(&input);
-        let with_year = format!("{} {}", now.year(), without_suffixes);
+        let without_comma = without_suffixes.replace(", ", " ");
+        let with_year = format!("{} {}", now.year(), without_comma);
         self.tz
             .datetime_from_str(&with_year, "%Y %b %d at %I:%M %P")
             .or_else(|_| self.tz.datetime_from_str(&with_year, "%Y %b %d %H:%M:%S"))
@@ -437,7 +438,7 @@ where
     fn month_mdy_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[a-zA-Z]{3,9}\.?\s+[0-9]{1,2}(st|nd|rd|th)?,\s+[0-9]{2,4},?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
+                r"^[a-zA-Z]{3,9}\.?\s+[0-9]{1,2}(st|nd|rd|th)?,?\s+[0-9]{2,4},?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
             ).unwrap();
         }
         if !RE.is_match(input) {
@@ -506,7 +507,7 @@ where
     fn month_mdy(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex =
-                Regex::new(r"^[a-zA-Z]{3,9}\.?\s+[0-9]{1,2}(st|nd|rd|th)?,\s+[0-9]{2,4}$").unwrap();
+                Regex::new(r"^[a-zA-Z]{3,9}\.?\s+[0-9]{1,2}(st|nd|rd|th)?,?\s+[0-9]{2,4}$").unwrap();
         }
         if !RE.is_match(input) {
             return None;
@@ -537,7 +538,7 @@ where
     fn month_dmy_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[0-9]{1,2}(st|nd|rd|th)?\s+[a-zA-Z]{3,9}\s+[0-9]{2,4},?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?(\.[0-9]{1,9})?$",
+                r"^[0-9]{1,2}(st|nd|rd|th)?\s+[a-zA-Z]{3,9},?\s+[0-9]{2,4},?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?(\.[0-9]{1,9})?$",
             ).unwrap();
         }
         if !RE.is_match(input) {
@@ -566,7 +567,7 @@ where
     fn month_dmy(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex =
-                Regex::new(r"^[0-9]{1,2}(st|nd|rd|th)?\s+[a-zA-Z]{3,9}\s+[0-9]{2,4}$").unwrap();
+                Regex::new(r"^[0-9]{1,2}(st|nd|rd|th)?\s+[a-zA-Z]{3,9},?\s+[0-9]{2,4}$").unwrap();
         }
         if !RE.is_match(input) {
             return None;
@@ -578,7 +579,7 @@ where
             None => Utc::now().with_timezone(self.tz).time(),
         };
 
-        let dt = strip_number_suffixes(&input);
+        let dt = strip_number_suffixes(&input.replace(", ", " "));
         NaiveDate::parse_from_str(&dt, "%d %B %y")
             .or_else(|_| NaiveDate::parse_from_str(&dt, "%d %B %Y"))
             .ok()
@@ -1259,6 +1260,10 @@ mod tests {
                 "May 2nd 02:45:27",
                 Utc.ymd(Utc::now().year(), 5, 2).and_hms(2, 45, 27),
             ),
+            (
+                "May 27, 02:45:27",
+                Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
+            ),
         ];
 
         for &(input, want) in test_cases.iter() {
@@ -1300,6 +1305,14 @@ mod tests {
             (
                 "September 3rd, 2012, 10:10:09",
                 Utc.ymd(2012, 9, 3).and_hms(10, 10, 9),
+            ),
+            (
+                "May 8 2009, 5:57:51 PM",
+                Utc.ymd(2009, 5, 8).and_hms(17, 57, 51),
+            ),
+            (
+                "September 17 2012 10:09am",
+                Utc.ymd(2012, 9, 17).and_hms(10, 9, 0),
             ),
         ];
 
@@ -1350,6 +1363,14 @@ mod tests {
             (
                 "September 3rd, 2012 at 10:09am PST",
                 Utc.ymd(2012, 9, 3).and_hms(18, 9, 0),
+            ),
+            (
+                "May 26 2021, 12:49 AM PDT",
+                Utc.ymd(2021, 5, 26).and_hms(7, 49, 0),
+            ),
+            (
+                "September 17 2012 at 10:09am PST",
+                Utc.ymd(2012, 9, 17).and_hms(18, 9, 0),
             ),
         ];
 
@@ -1405,6 +1426,14 @@ mod tests {
                 "October 2nd, 1970",
                 Utc.ymd(1970, 10, 2).and_time(Utc::now().time()),
             ),
+            (
+                "oct. 7 70",
+                Utc.ymd(1970, 10, 7).and_time(Utc::now().time()),
+            ),
+            (
+                "October 7 1970",
+                Utc.ymd(1970, 10, 7).and_time(Utc::now().time()),
+            ),
         ];
 
         for &(input, want) in test_cases.iter() {
@@ -1451,6 +1480,11 @@ mod tests {
                 "2nd May 2019 19:11:40.164",
                 Utc.ymd(2019, 5, 2).and_hms_milli(19, 11, 40, 164),
             ),
+            (
+                "12 Feb, 2006, 19:17",
+                Utc.ymd(2006, 2, 12).and_hms(19, 17, 0),
+            ),
+            ("12 Feb, 2006 19:17", Utc.ymd(2006, 2, 12).and_hms(19, 17, 0)),
         ];
 
         for &(input, want) in test_cases.iter() {
@@ -1496,7 +1530,7 @@ mod tests {
                 Utc.ymd(2013, 2, 3).and_time(Utc::now().time()),
             ),
             (
-                "1st July 2013",
+                "1 July, 2013",
                 Utc.ymd(2013, 7, 1).and_time(Utc::now().time()),
             ),
         ];
