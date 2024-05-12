@@ -108,6 +108,10 @@
 //!     "4:00pm PST",
 //!     "6:00 AM PST",
 //!     "6:00pm UTC",
+//!     // Mon dd
+//!     "September 14",
+//!     "May 30",
+//!     "Dec 14",
 //!     // Mon dd hh:mm:ss
 //!     "May 6 at 9:24 PM",
 //!     "May 27 02:45:27",

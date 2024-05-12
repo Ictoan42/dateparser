@@ -72,6 +72,7 @@ where
             return None;
         }
         self.month_md_hms(input)
+            .or_else(|| self.month_md(input))
             .or_else(|| self.month_mdy_hms(input))
             .or_else(|| self.month_mdy_hms_z(input))
             .or_else(|| self.month_mdy(input))
@@ -426,6 +427,37 @@ where
             .or_else(|_| self.tz.datetime_from_str(&with_year, "%Y %b %d %H:%M:%S"))
             .ok()
             .map(|parsed| parsed.with_timezone(&Utc))
+            .map(Ok)
+    }
+
+    // Mon dd
+    // - May 6
+    // - August 11
+    fn month_md(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
+        lazy_static! {
+            static ref RE: Regex = Regex::new(
+                r"^[a-zA-Z]{3,9}\s+[0-9]{1,2}$"
+            )
+            .unwrap();
+        }
+        if !RE.is_match(input) {
+            return None;
+        }
+
+        // set time to use
+        let time = match self.default_time {
+            Some(v) => v,
+            None => Utc::now().with_timezone(self.tz).time(),
+        };
+
+        let now = Utc::now().with_timezone(self.tz);
+        let with_year = format!("{} {}", now.year(), input);
+
+        NaiveDate::parse_from_str(&with_year, "%Y %B %d")
+            .ok()
+            .map(|parsed| parsed.and_time(time))
+            .and_then(|datetime| self.tz.from_local_datetime(&datetime).single())
+            .map(|at_tz| at_tz.with_timezone(&Utc))
             .map(Ok)
     }
 
@@ -1222,6 +1254,42 @@ mod tests {
             )
         }
         assert!(parse.month_md_hms("not-date-time").is_none());
+    }
+
+    #[test]
+    fn month_md() {
+        let parse = Parse::new(&Utc, None);
+
+        let test_cases = [
+            (
+                "May 6",
+                Utc.ymd(Utc::now().year(), 5, 6).and_time(Utc::now().time()),
+            ),
+            (
+                "May 27",
+                Utc.ymd(Utc::now().year(), 5, 27).and_time(Utc::now().time()),
+            ),
+            (
+                "August 24",
+                Utc.ymd(Utc::now().year(), 8, 24).and_time(Utc::now().time()),
+            )
+        ];
+
+        for &(input, want) in test_cases.iter() {
+            assert_eq!(
+                parse
+                    .month_md(input)
+                    .unwrap()
+                    .unwrap()
+                    .trunc_subsecs(0)
+                    .with_second(0)
+                    .unwrap(),
+                want.unwrap().trunc_subsecs(0).with_second(0).unwrap(),
+                "month_md_hms/{}",
+                input
+            )
+        }
+        assert!(parse.month_md("not-date-time").is_none());
     }
 
     #[test]
