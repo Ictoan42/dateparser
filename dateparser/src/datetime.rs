@@ -466,7 +466,7 @@ where
     fn month_mdy_hms_z(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[a-zA-Z]{3,9}\s+[0-9]{1,2}(st|nd|rd|th)?,?\s+[0-9]{4}\s*,?(at)?\s+[0-9]{2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?(?P<tz>\s+[+-:a-zA-Z0-9]{3,6})$",
+                r"^[a-zA-Z]{3,9}\s+[0-9]{1,2}(st|nd|rd|th)?,?\s+[0-9]{4}\s*,?(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?(?P<tz>\s+[+-:a-zA-Z0-9]{3,6})$",
             ).unwrap();
         }
         if !RE.is_match(input) {
@@ -1347,6 +1347,10 @@ mod tests {
             (
                 "May 02, 2021 15:51 UTC",
                 Utc.ymd(2021, 5, 2).and_hms(15, 51, 0),
+            ),
+            (
+                "May 02, 2021 8:51 UTC",
+                Utc.ymd(2021, 5, 2).and_hms(8, 51, 0),
             ),
             (
                 "May 26, 2021, 12:49 AM PDT",
