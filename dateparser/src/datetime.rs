@@ -440,7 +440,7 @@ where
     fn month_md(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[a-zA-Z]{3,9}\s+[0-9]{1,2}$"
+                r"^[a-zA-Z]{3,9}\s+[0-9]{1,2}(st|nd|rd|th)?$"
             )
             .unwrap();
         }
@@ -455,7 +455,8 @@ where
         };
 
         let now = Utc::now().with_timezone(self.tz);
-        let with_year = format!("{} {}", now.year(), input);
+        let without_suffixes = strip_number_suffixes(input);
+        let with_year = format!("{} {}", now.year(), without_suffixes);
 
         NaiveDate::parse_from_str(&with_year, "%Y %B %d")
             .ok()
@@ -1358,7 +1359,11 @@ mod tests {
                 Utc.ymd(Utc::now().year(), 5, 6).and_time(Utc::now().time()),
             ),
             (
-                "May 27",
+                "May 1st",
+                Utc.ymd(Utc::now().year(), 5, 1).and_time(Utc::now().time()),
+            ),
+            (
+                "May 27th",
                 Utc.ymd(Utc::now().year(), 5, 27).and_time(Utc::now().time()),
             ),
             (
