@@ -84,7 +84,9 @@ where
         if !RE.is_match(input) {
             return None;
         }
-        self.month_dmy_hms(input).or_else(|| self.month_dmy(input))
+        self.month_dmy_hms(input)
+            .or_else(|| self.month_dmy(input))
+            .or_else(|| self.month_dm_hms(input))
     }
 
     fn slash_mdy_family(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
@@ -582,6 +584,37 @@ where
             .map(|parsed| parsed.and_time(time))
             .and_then(|datetime| self.tz.from_local_datetime(&datetime).single())
             .map(|at_tz| at_tz.with_timezone(&Utc))
+            .map(Ok)
+    }
+
+    // dd Mon hh:mm:ss
+    // - 6 May at 9:24 PM
+    // - 27 May 02:45:27
+    fn month_dm_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
+        lazy_static! {
+            static ref RE: Regex = Regex::new(
+                r"^[0-9]{1,2}\s+[a-zA-Z]{3,9}\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
+            )
+            .unwrap();
+        }
+        if !RE.is_match(input) {
+            return None;
+        }
+
+        let now = Utc::now().with_timezone(self.tz);
+        let with_year = format!("{} {}", now.year(), input);
+        let dt = with_year.replace("at ", " ");
+        self.tz
+            .datetime_from_str(&dt, "%Y %d %B %I:%M %P")
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %d %B %I:%M"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %d %B %I:%M:%S"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %d %B %I:%M:%S %P"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %d %B %H:%M"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %d %B %H:%M:%S"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %d %B %H:%M %P"))
+            .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %d %B %H:%M:%S %P"))
+            .ok()
+            .map(|parsed| parsed.with_timezone(&Utc))
             .map(Ok)
     }
 
@@ -1392,6 +1425,56 @@ mod tests {
             )
         }
         assert!(parse.month_dmy_hms("not-date-time").is_none());
+    }
+
+    #[test]
+    fn month_dm_hms() {
+        let parse = Parse::new(&Utc, None);
+
+        let test_cases = [
+            (
+                "6 May at 9:24 PM",
+                Utc.ymd(Utc::now().year(), 5, 6).and_hms(21, 24, 0),
+            ),
+            (
+                "27 May 02:45:27",
+                Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
+            ),
+            (
+                "6 September at 9:24 PM",
+                Utc.ymd(Utc::now().year(), 9, 6).and_hms(21, 24, 0),
+            ),
+            (
+                "27 february 02:45:27",
+                Utc.ymd(Utc::now().year(), 2, 27).and_hms(2, 45, 27),
+            ),
+            (
+                "6 May 9:24 PM",
+                Utc.ymd(Utc::now().year(), 5, 6).and_hms(21, 24, 0),
+            ),
+            (
+                "27 May at 02:45:27",
+                Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
+            ),
+            (
+                "6 September at 9:24:36 pm",
+                Utc.ymd(Utc::now().year(), 9, 6).and_hms(21, 24, 36),
+            ),
+            (
+                "27 february 02:45:27 am",
+                Utc.ymd(Utc::now().year(), 2, 27).and_hms(2, 45, 27),
+            ),
+        ];
+
+        for &(input, want) in test_cases.iter() {
+            assert_eq!(
+                parse.month_dm_hms(input).unwrap().unwrap(),
+                want,
+                "month_dm_hms/{}",
+                input
+            )
+        }
+        assert!(parse.month_dm_hms("not-date-time").is_none());
     }
 
     #[test]
