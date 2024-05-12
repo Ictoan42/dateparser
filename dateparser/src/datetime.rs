@@ -1344,15 +1344,15 @@ mod tests {
                 Utc.ymd(Utc::now().year(), 2, 27).and_hms(2, 45, 27),
             ),
             (
-                "May 6 9:24 PM",
-                Utc.ymd(Utc::now().year(), 5, 6).and_hms(21, 24, 0),
+                "May 2nd 9:24 PM",
+                Utc.ymd(Utc::now().year(), 5, 2).and_hms(21, 24, 0),
             ),
             (
                 "May 27 at 02:45:27",
                 Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
             ),
             (
-                "September 6 at 9:24:36 pm",
+                "September 6th at 9:24:36 pm",
                 Utc.ymd(Utc::now().year(), 9, 6).and_hms(21, 24, 36),
             ),
             (
