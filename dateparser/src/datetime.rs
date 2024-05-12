@@ -1211,6 +1211,14 @@ mod tests {
                 "May 27 02:45:27",
                 Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
             ),
+            (
+                "September 6 at 9:24 PM",
+                Utc.ymd(Utc::now().year(), 9, 6).and_hms(21, 24, 0),
+            ),
+            (
+                "february 27 02:45:27",
+                Utc.ymd(Utc::now().year(), 2, 27).and_hms(2, 45, 27),
+            ),
         ];
 
         for &(input, want) in test_cases.iter() {
