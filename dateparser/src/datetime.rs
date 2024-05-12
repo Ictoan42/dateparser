@@ -530,7 +530,7 @@ where
     fn month_dmy_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[0-9]{1,2}\s+[a-zA-Z]{3,9}\s+[0-9]{2,4},?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?(\.[0-9]{1,9})?$",
+                r"^[0-9]{1,2}\s+[a-zA-Z]{3,9}\s+[0-9]{2,4},?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?(\.[0-9]{1,9})?\s*(am|pm|AM|PM)?$",
             ).unwrap();
         }
         if !RE.is_match(input) {
@@ -1350,12 +1350,24 @@ mod tests {
                 Utc.ymd(2006, 2, 12).and_hms(19, 17, 0)
             ),
             (
+                "12 Feb 2006 7:17 pm",
+                Utc.ymd(2006, 2, 12).and_hms(19, 17, 0)
+            ),
+            (
                 "12 Feb 2006, at 19:17",
                 Utc.ymd(2006, 2, 12).and_hms(19, 17, 0),
             ),
             (
                 "12 Feb 2006 at 19:17",
                 Utc.ymd(2006, 2, 12).and_hms(19, 17, 0)
+            ),
+            (
+                "12 Feb 2006, at 7:17 pm",
+                Utc.ymd(2006, 2, 12).and_hms(19, 17, 0),
+            ),
+            (
+                "12 Feb 2006 at 1:17 am",
+                Utc.ymd(2006, 2, 12).and_hms(1, 17, 0)
             ),
             (
                 "14 May 2019 19:11:40.164",
