@@ -66,7 +66,7 @@ where
 
     fn month_mdy_family(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"^[a-zA-Z]{3,9}\.?\s+[0-9]{1,2}").unwrap();
+            static ref RE: Regex = Regex::new(r"^[a-zA-Z]{3,9}\.?\s*(the)?\s+[0-9]{1,2}").unwrap();
         }
         if !RE.is_match(input) {
             return None;
@@ -80,7 +80,7 @@ where
 
     fn month_dmy_family(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"^[0-9]{1,2}(st|nd|rd|th)?\s+[a-zA-Z]{3,9}").unwrap();
+            static ref RE: Regex = Regex::new(r"^[0-9]{1,2}(st|nd|rd|th)?\s*(of)?\s+[a-zA-Z]{3,9}").unwrap();
         }
         if !RE.is_match(input) {
             return None;
