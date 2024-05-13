@@ -415,7 +415,7 @@ where
     fn month_md_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[a-zA-Z]{3,9}\s+[0-9]{1,2}(st|nd|rd|th)?,?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
+                r"^[a-zA-Z]{3,9}\s*(the)?\s+[0-9]{1,2}(st|nd|rd|th)?,?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
             )
             .unwrap();
         }
@@ -427,7 +427,7 @@ where
         let without_suffixes = strip_number_suffixes(&input);
         let without_comma = without_suffixes.replace(", ", " ");
         let with_year = format!("{} {}", now.year(), without_comma);
-        let dt = with_year.replace("at ", " ");
+        let dt = with_year.replace("at ", " ").replace("the ", " ");
         self.tz
             .datetime_from_str(&dt, "%Y %B %d %I:%M %P")
             .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %B %d %I:%M"))
@@ -448,7 +448,7 @@ where
     fn month_md(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[a-zA-Z]{3,9}\s+[0-9]{1,2}(st|nd|rd|th)?$"
+                r"^[a-zA-Z]{3,9}\s*(the)?\s+[0-9]{1,2}(st|nd|rd|th)?$"
             )
             .unwrap();
         }
@@ -463,7 +463,9 @@ where
         };
 
         let now = Utc::now().with_timezone(self.tz);
-        let without_suffixes = strip_number_suffixes(input);
+        let without_suffixes = strip_number_suffixes(
+            &input.replace("the ", " ")
+        );
         let with_year = format!("{} {}", now.year(), without_suffixes);
 
         NaiveDate::parse_from_str(&with_year, "%Y %B %d")
@@ -481,7 +483,7 @@ where
     fn month_mdy_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[a-zA-Z]{3,9}\.?\s+[0-9]{1,2}(st|nd|rd|th)?,?\s+[0-9]{2,4},?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
+                r"^[a-zA-Z]{3,9}\.?\s*(the)?\s+[0-9]{1,2}(st|nd|rd|th)?,?\s+[0-9]{2,4},?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
             ).unwrap();
         }
         if !RE.is_match(input) {
@@ -489,8 +491,9 @@ where
         }
 
         let dt = strip_number_suffixes(
-            &input.replace(", ", " ").replace(". ", " ")
+            &input.replace(", ", " ").replace(". ", " ").replace("the ", " ").replace("at ", " ")
         );
+        println!("{}", dt);
         self.tz
             .datetime_from_str(&dt, "%B %d %Y %H:%M:%S")
             .or_else(|_| self.tz.datetime_from_str(&dt, "%B %d %Y %H:%M"))
@@ -509,7 +512,7 @@ where
     fn month_mdy_hms_z(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[a-zA-Z]{3,9}\s+[0-9]{1,2}(st|nd|rd|th)?,?\s+[0-9]{4}\s*,?(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?(?P<tz>\s+[+-:a-zA-Z0-9]{3,6})$",
+                r"^[a-zA-Z]{3,9}\s*(the)?\s+[0-9]{1,2}(st|nd|rd|th)?,?\s+[0-9]{4}\s*,?(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?(?P<tz>\s+[+-:a-zA-Z0-9]{3,6})$",
             ).unwrap();
         }
         if !RE.is_match(input) {
@@ -522,7 +525,7 @@ where
                 return match timezone::parse(matched_tz.as_str().trim()) {
                     Ok(offset) => {
                         let dt = strip_number_suffixes(
-                            &input.replace(',', "").replace("at", "")
+                            &input.replace(',', "").replace("at", "").replace("the ", " ")
                         );
                         parse_from_str(&dt, "%B %d %Y %H:%M:%S %Z")
                             .or_else(|_| parse_from_str(&dt, "%B %d %Y %H:%M %Z"))
@@ -550,7 +553,7 @@ where
     fn month_mdy(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex =
-                Regex::new(r"^[a-zA-Z]{3,9}\.?\s+[0-9]{1,2}(st|nd|rd|th)?,?\s+[0-9]{2,4}$").unwrap();
+                Regex::new(r"^[a-zA-Z]{3,9}\.?\s*(the)?\s+[0-9]{1,2}(st|nd|rd|th)?,?\s+[0-9]{2,4}$").unwrap();
         }
         if !RE.is_match(input) {
             return None;
@@ -563,7 +566,7 @@ where
         };
 
         let dt = strip_number_suffixes(
-            &input.replace(", ", " ").replace(". ", " ")
+            &input.replace(", ", " ").replace(". ", " ").replace("the ", " ")
         );
         NaiveDate::parse_from_str(&dt, "%B %d %y")
             .or_else(|_| NaiveDate::parse_from_str(&dt, "%B %d %Y"))
@@ -581,7 +584,7 @@ where
     fn month_dmy_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[0-9]{1,2}(st|nd|rd|th)?\s+[a-zA-Z]{3,9},?\s+[0-9]{2,4},?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?(\.[0-9]{1,9})?\s*(am|pm|AM|PM)?$",
+                r"^[0-9]{1,2}(st|nd|rd|th)?\s*(of)?\s+[a-zA-Z]{3,9},?\s+[0-9]{2,4},?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?(\.[0-9]{1,9})?\s*(am|pm|AM|PM)?$",
             ).unwrap();
         }
         if !RE.is_match(input) {
@@ -591,6 +594,7 @@ where
         let dt = strip_number_suffixes(
             &input.replace(", ", " ")
                 .replace("at ", " ")
+                .replace("of ", " ")
         );
         self.tz
             .datetime_from_str(&dt, "%d %B %Y %H:%M:%S")
@@ -611,7 +615,7 @@ where
     fn month_dmy(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex =
-                Regex::new(r"^[0-9]{1,2}(st|nd|rd|th)?\s+[a-zA-Z]{3,9},?\s+[0-9]{2,4}$").unwrap();
+                Regex::new(r"^[0-9]{1,2}(st|nd|rd|th)?\s*(of)?\s+[a-zA-Z]{3,9},?\s+[0-9]{2,4}$").unwrap();
         }
         if !RE.is_match(input) {
             return None;
@@ -623,7 +627,9 @@ where
             None => Utc::now().with_timezone(self.tz).time(),
         };
 
-        let dt = strip_number_suffixes(&input.replace(", ", " "));
+        let dt = strip_number_suffixes(
+            &input.replace(", ", " ").replace("of ", " ")
+        );
         NaiveDate::parse_from_str(&dt, "%d %B %y")
             .or_else(|_| NaiveDate::parse_from_str(&dt, "%d %B %Y"))
             .ok()
@@ -636,7 +642,7 @@ where
     fn month_dm(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[0-9]{1,2}(st|nd|rd|th)?\s+[a-zA-Z]{3,9}$"
+                r"^[0-9]{1,2}(st|nd|rd|th)?\s*(of)?\s+[a-zA-Z]{3,9}$"
             )
             .unwrap();
         }
@@ -650,7 +656,9 @@ where
         };
 
         let now = Utc::now().with_timezone(self.tz);
-        let without_suffixes = strip_number_suffixes(&input);
+        let without_suffixes = strip_number_suffixes(
+            &input.replace("of ", " ")
+        );
         let with_year = format!("{} {}", now.year(), without_suffixes);
 
         NaiveDate::parse_from_str(&with_year, "%Y %d %B")
@@ -667,7 +675,7 @@ where
     fn month_dm_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[0-9]{1,2}(st|nd|rd|th)?\s+[a-zA-Z]{3,9},?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
+                r"^[0-9]{1,2}(st|nd|rd|th)?\s*(of)?\s+[a-zA-Z]{3,9},?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?\s*(am|pm|AM|PM)?$",
             )
             .unwrap();
         }
@@ -678,7 +686,7 @@ where
         let now = Utc::now().with_timezone(self.tz);
         let without_suffixes = strip_number_suffixes(input);
         let with_year = format!("{} {}", now.year(), without_suffixes);
-        let dt = with_year.replace("at ", " ").replace(", ", " ");
+        let dt = with_year.replace("at ", " ").replace(", ", " ").replace("of ", " ");
         self.tz
             .datetime_from_str(&dt, "%Y %d %B %I:%M %P")
             .or_else(|_| self.tz.datetime_from_str(&dt, "%Y %d %B %I:%M"))
@@ -1485,6 +1493,7 @@ mod tests {
         ];
 
         for &(input, want) in test_cases.iter() {
+            println!("{}", input);
             assert_eq!(
                 parse.month_mdy_hms(input).unwrap().unwrap(),
                 want,
