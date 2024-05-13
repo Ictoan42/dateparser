@@ -1357,7 +1357,7 @@ mod tests {
                 Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
             ),
             (
-                "May 6th at 9:24 PM",
+                "May the 6th at 9:24 PM",
                 Utc.ymd(Utc::now().year(), 5, 6).and_hms(21, 24, 0),
             ),
             (
@@ -1377,7 +1377,7 @@ mod tests {
                 Utc.ymd(Utc::now().year(), 2, 27).and_hms(2, 45, 27),
             ),
             (
-                "May 2nd 9:24 PM",
+                "May the 2nd 9:24 PM",
                 Utc.ymd(Utc::now().year(), 5, 2).and_hms(21, 24, 0),
             ),
             (
@@ -1385,7 +1385,7 @@ mod tests {
                 Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
             ),
             (
-                "September 6th at 9:24:36 pm",
+                "September the 6th at 9:24:36 pm",
                 Utc.ymd(Utc::now().year(), 9, 6).and_hms(21, 24, 36),
             ),
             (
@@ -1415,7 +1415,7 @@ mod tests {
                 Utc.ymd(Utc::now().year(), 5, 6).and_time(Utc::now().time()),
             ),
             (
-                "May 1st",
+                "May the 1st",
                 Utc.ymd(Utc::now().year(), 5, 1).and_time(Utc::now().time()),
             ),
             (
@@ -1463,7 +1463,7 @@ mod tests {
                 Utc.ymd(2012, 9, 17).and_hms(10, 10, 9),
             ),
             (
-                "May 8th, 2009 5:57:51 PM",
+                "May the 8th, 2009 at 5:57:51 PM",
                 Utc.ymd(2009, 5, 8).and_hms(17, 57, 51),
             ),
             (
@@ -1471,7 +1471,7 @@ mod tests {
                 Utc.ymd(2012, 9, 1).and_hms(10, 9, 0),
             ),
             (
-                "September 3rd, 2012, 10:10:09",
+                "September the 3rd, 2012, 10:10:09",
                 Utc.ymd(2012, 9, 3).and_hms(10, 10, 9),
             ),
             (
@@ -1525,7 +1525,7 @@ mod tests {
                 Utc.ymd(2021, 5, 2).and_hms(15, 51, 31),
             ),
             (
-                "May 2nd, 2021 15:51 UTC",
+                "May the 2nd, 2021 15:51 UTC",
                 Utc.ymd(2021, 5, 2).and_hms(15, 51, 0),
             ),
             (
@@ -1533,7 +1533,7 @@ mod tests {
                 Utc.ymd(2021, 5, 1).and_hms(7, 49, 0),
             ),
             (
-                "September 3rd, 2012 at 10:09am PST",
+                "September the 3rd, 2012 at 10:09am PST",
                 Utc.ymd(2012, 9, 3).and_hms(18, 9, 0),
             ),
             (
@@ -1591,11 +1591,11 @@ mod tests {
                 Utc.ymd(1970, 10, 7).and_time(Utc::now().time()),
             ),
             (
-                "oct. 1st, 70",
+                "oct. the 1st, 70",
                 Utc.ymd(1970, 10, 1).and_time(Utc::now().time()),
             ),
             (
-                "October 2nd, 1970",
+                "October the 2nd, 1970",
                 Utc.ymd(1970, 10, 2).and_time(Utc::now().time()),
             ),
             (
@@ -1663,14 +1663,14 @@ mod tests {
                 Utc.ymd(2019, 5, 14).and_hms_milli(19, 11, 40, 164),
             ),
             (
-                "12th Feb 2006, 19:17",
+                "12th of Feb 2006, 19:17",
                 Utc.ymd(2006, 2, 12).and_hms(19, 17, 0),
             ),
             (
                 "1st Feb 2006 19:17",
                 Utc.ymd(2006, 2, 1).and_hms(19, 17, 0)),
             (
-                "2nd May 2019 19:11:40.164",
+                "2nd of May 2019 19:11:40.164",
                 Utc.ymd(2019, 5, 2).and_hms_milli(19, 11, 40, 164),
             ),
             (
@@ -1708,7 +1708,7 @@ mod tests {
                 Utc.ymd(Utc::now().year(), 5, 27).and_hms(2, 45, 27),
             ),
             (
-                "1st September at 9:24 PM",
+                "1st of September at 9:24 PM",
                 Utc.ymd(Utc::now().year(), 9, 1).and_hms(21, 24, 0),
             ),
             (
@@ -1720,7 +1720,7 @@ mod tests {
                 Utc.ymd(Utc::now().year(), 5, 6).and_hms(21, 24, 0),
             ),
             (
-                "11th May at 02:45:27",
+                "11th of May at 02:45:27",
                 Utc.ymd(Utc::now().year(), 5, 11).and_hms(2, 45, 27),
             ),
             (
@@ -1768,11 +1768,11 @@ mod tests {
                 "7th oct 70",
                 Utc.ymd(1970, 10, 7).and_time(Utc::now().time())),
             (
-                "2nd oct 1970",
+                "2nd of oct 1970",
                 Utc.ymd(1970, 10, 2).and_time(Utc::now().time()),
             ),
             (
-                "03th February 2013",
+                "03th of February 2013",
                 Utc.ymd(2013, 2, 3).and_time(Utc::now().time()),
             ),
             (
@@ -1815,7 +1815,7 @@ mod tests {
                 Utc.ymd(Utc::now().year(), 2, 3).and_time(Utc::now().time()),
             ),
             (
-                "1st July",
+                "1st of July",
                 Utc.ymd(Utc::now().year(), 7, 1).and_time(Utc::now().time()),
             ),
         ];
