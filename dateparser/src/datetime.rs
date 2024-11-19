@@ -717,7 +717,7 @@ where
     fn slash_dmy_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?(\.[0-9]{1,9})?\s*(am|pm|AM|PM)?$"
+                r"^[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4},?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?(\.[0-9]{1,9})?\s*(am|pm|AM|PM)?$"
             )
             .unwrap();
         }
@@ -725,17 +725,19 @@ where
             return None;
         }
 
+        let dt = &input.replace(",", "").replace("at", "");
+
         self.tz
-            .datetime_from_str(input, "%d/%m/%y %H:%M:%S")
-            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%y %H:%M"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%y %H:%M:%S%.f"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%y %I:%M:%S %P"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%y %I:%M %P"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%Y %H:%M:%S"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%Y %H:%M"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%Y %H:%M:%S%.f"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%Y %I:%M:%S %P"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%d/%m/%Y %I:%M %P"))
+            .datetime_from_str(dt, "%d/%m/%y %H:%M:%S")
+            .or_else(|_| self.tz.datetime_from_str(dt, "%d/%m/%y %H:%M"))
+            .or_else(|_| self.tz.datetime_from_str(dt, "%d/%m/%y %H:%M:%S%.f"))
+            .or_else(|_| self.tz.datetime_from_str(dt, "%d/%m/%y %I:%M:%S %P"))
+            .or_else(|_| self.tz.datetime_from_str(dt, "%d/%m/%y %I:%M %P"))
+            .or_else(|_| self.tz.datetime_from_str(dt, "%d/%m/%Y %H:%M:%S"))
+            .or_else(|_| self.tz.datetime_from_str(dt, "%d/%m/%Y %H:%M"))
+            .or_else(|_| self.tz.datetime_from_str(dt, "%d/%m/%Y %H:%M:%S%.f"))
+            .or_else(|_| self.tz.datetime_from_str(dt, "%d/%m/%Y %I:%M:%S %P"))
+            .or_else(|_| self.tz.datetime_from_str(dt, "%d/%m/%Y %I:%M %P"))
             .ok()
             .map(|at_tz| at_tz.with_timezone(&Utc))
             .map(Ok)
@@ -779,7 +781,7 @@ where
     fn slash_ymd_hms(&self, input: &str) -> Option<Result<DateTime<Utc>>> {
         lazy_static! {
             static ref RE: Regex = Regex::new(
-                r"^[0-9]{4}/[0-9]{1,2}/[0-9]{1,2}\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?(\.[0-9]{1,9})?\s*(am|pm|AM|PM)?$"
+                r"^[0-9]{4}/[0-9]{1,2}/[0-9]{1,2},?\s*(at)?\s+[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?(\.[0-9]{1,9})?\s*(am|pm|AM|PM)?$"
             )
             .unwrap();
         }
@@ -787,12 +789,14 @@ where
             return None;
         }
 
+        let dt = &input.replace(",", "").replace("at", "");
+
         self.tz
-            .datetime_from_str(input, "%Y/%m/%d %H:%M:%S")
-            .or_else(|_| self.tz.datetime_from_str(input, "%Y/%m/%d %H:%M"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%Y/%m/%d %H:%M:%S%.f"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%Y/%m/%d %I:%M:%S %P"))
-            .or_else(|_| self.tz.datetime_from_str(input, "%Y/%m/%d %I:%M %P"))
+            .datetime_from_str(dt, "%Y/%m/%d %H:%M:%S")
+            .or_else(|_| self.tz.datetime_from_str(dt, "%Y/%m/%d %H:%M"))
+            .or_else(|_| self.tz.datetime_from_str(dt, "%Y/%m/%d %H:%M:%S%.f"))
+            .or_else(|_| self.tz.datetime_from_str(dt, "%Y/%m/%d %I:%M:%S %P"))
+            .or_else(|_| self.tz.datetime_from_str(dt, "%Y/%m/%d %I:%M %P"))
             .ok()
             .map(|at_tz| at_tz.with_timezone(&Utc))
             .map(Ok)
